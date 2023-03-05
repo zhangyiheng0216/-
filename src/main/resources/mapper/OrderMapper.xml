@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zyh.sale.mapper.OrderMapper">
+
+
+    <!-- 插入订单数据：Integer insertOrder(Order order) -->
+    <insert id="insertOrder" useGeneratedKeys="true" keyProperty="oid">
+        insert into t_order(
+            uid, recv_name, recv_phone, recv_province, recv_city, recv_area, recv_address, total_price, status, order_time, pay_time, created_user, created_time, modified_user, modified_time
+        ) values (
+                             #{uid}, #{recvName}, #{recvPhone}, #{recvProvince}, #{recvCity}, #{recvArea},
+                             #{recvAddress}, #{totalPrice}, #{status}, #{orderTime}, #{payTime}, #{createdUser},
+                             #{createdTime}, #{modifiedUser}, #{modifiedTime}
+        )
+    </insert>
+    <!-- 插入订单商品数据：Integer insertOrderItem(OrderItem orderItem) -->
+    <insert id="insertOrderItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_order_item (
+            oid, pid, title, image, price, num, created_user,
+            created_time, modified_user, modified_time
+        ) VALUES (
+                     #{oid}, #{pid}, #{title}, #{image}, #{price}, #{num}, #{createdUser},
+                     #{createdTime}, #{modifiedUser}, #{modifiedTime}
+                 )
+    </insert>
+      <select id="queryOrderVoByUid" resultType="com.zyh.sale.vo.OrderVo">
+          SELECT
+              t_order.oid,
+              t_order.uid,
+              t_order.status,
+              t_order.order_time AS orderTime,
+              t_order.total_price AS totalPrice,
+              t_order.recv_name AS recvName,
+              t_order_item.pid,
+              t_order_item.price,
+              t_order_item.num,
+              t_order_item.title,
+              t_order_item.price AS realPrice,
+              t_order_item.image
+          FROM
+              t_order_item LEFT JOIN t_order ON(t_order_item.oid = t_order.oid)
+
+          WHERE
+              uid = #{uid}
+          ORDER BY
+              t_order_item.created_time DESC
+      </select>
+
+    <select id="getOidByUid" resultType="Integer">
+        select oid from t_order
+        where uid = #{uid}
+        ORDER BY oid desc
+            limit 0,1
+    </select>
+
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.sale.mapper.UserMapper">
+
+    <!--自定义映射规则-->
+    <resultMap id="UserEntityMap" type="com.zyh.sale.pojo.User">
+        <id column="uid" property="uid"></id>
+        <result column="is_delete" property="isDelete"></result>
+        <result column="created_user" property="createdUser"></result>
+        <result column="created_time" property="createdTime"></result>
+        <result column="modified_user" property="modifiedUser"></result>
+        <result column="modified_time" property="modifiedTime"></result>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="uid">
+        INSERT INTO t_user (
+            username, password,salt, phone ,email,gender,avatar,is_delete,
+            created_user,created_time,modified_user,modified_time
+        ) Values (
+             #{username}, #{password},#{salt}, #{phone} ,#{email},#{gender},#{avatar},#{isDelete},
+             #{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime}
+        )
+    </insert>
+
+
+    <select id="findByUserName" resultMap="UserEntityMap">
+        SELECT * from t_user where username = #{username}
+    </select>
+
+    <update id="updatePasswordByUid">
+        update t_user
+        set password = #{password},
+            modified_user = #{modifiedUser},
+            modified_time = #{modifiedTime}
+        where uid=#{uid};
+    </update>
+
+    <select id="findByUid" resultMap="UserEntityMap">
+        select *
+        from t_user
+        WHERE uid=#{uid};
+    </select>
+
+    <update id="updateInfoByUid">
+        UPDATE t_user
+        set
+            <if test="phone!=null">phone = #{phone},</if>
+            <if test="email!=null">email = #{email},</if>
+            <if test="gender!=null">gender = #{gender},</if>
+            modified_time = #{modifiedTime},
+            modified_user = #{modifiedUser}
+        where uid=#{uid}
+    </update>
+
+    <update id="updateAvatarByUid">
+        UPDATE t_user
+        SET avatar = #{avatar},
+            modified_user = #{modifiedUser},
+            modified_time = #{modifiedTime}
+        WHERE uid = #{uid}
+    </update>
+
+
+</mapper>
